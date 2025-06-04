@@ -1,0 +1,8 @@
+{
+  "namespaces": [
+    {
+      "namespace": "search-redis",
+      "path": "Resources/view"
+    }
+  ]
+}
