@@ -23,7 +23,7 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\Search\Redis;
+namespace BaksDev\SearchRedis;
 
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
