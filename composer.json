@@ -31,7 +31,7 @@
   },
   "autoload": {
     "psr-4": {
-      "BaksDev\\Search\\Redis\\": ""
+      "BaksDev\\SearchRedis\\": ""
     }
   },
   "config": {
