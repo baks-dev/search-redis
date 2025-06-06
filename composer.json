@@ -23,6 +23,7 @@
   "require": {
     "php": ">=8.4",
     "baks-dev/core": "^7.2",
+    "baks-dev/search": "^7.2",
     "predis/predis": "^2.3.0"
   },
   "require-dev": {
@@ -30,7 +31,7 @@
   },
   "autoload": {
     "psr-4": {
-      "BaksDev\\SearchRedis\\": ""
+      "BaksDev\\Search\\Redis\\": ""
     }
   },
   "config": {
