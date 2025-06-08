@@ -1,6 +1,6 @@
 # BaksDev Search Redis
 
-[![Version](https://img.shields.io/badge/version-7.2.3-blue)](https://github.com/baks-dev/search-redis/releases)
+[![Version](https://img.shields.io/badge/version-7.2.4-blue)](https://github.com/baks-dev/search-redis/releases)
 ![php 8.4+](https://img.shields.io/badge/php-min%208.4-red.svg)
 [![packagist](https://img.shields.io/badge/packagist-green)](https://packagist.org/packages/baks-dev/search-redis)
 
@@ -35,8 +35,13 @@ requirepass <YOU_PASSWORD>
 ``` dotenv
 REDIS_SEARCH_HOST=localhost
 REDIS_SEARCH_PORT=6579
-REDIS_SEARCH_TABLE=0
 REDIS_SEARCH_PASSWORD=<YOU_PASSWORD>
+```
+
+по умолчанию используется таблица с индексом 0, для пееропределения указать параметр
+
+``` dotenv
+REDIS_SEARCH_TABLE=1
 ```
 
 Перезапускаем Redis Stack

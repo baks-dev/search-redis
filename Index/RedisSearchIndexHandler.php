@@ -23,12 +23,12 @@
 
 namespace BaksDev\SearchRedis\Index;
 
+use BaksDev\Search\EntityDocument\EntityDocumentInterface;
 use BaksDev\Search\Index\SearchIndexInterface;
 use BaksDev\SearchRedis\RediSearch\Index;
 use BaksDev\SearchRedis\RediSearch\Query\BuilderInterface;
 use BaksDev\SearchRedis\RedisRaw\PredisAdapter;
 use BaksDev\SearchRedis\RedisRaw\RedisRawClientInterface;
-use BaksDev\Search\EntityDocument\EntityDocumentInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\Attribute\Target;
@@ -47,18 +47,18 @@ final class RedisSearchIndexHandler implements SearchIndexInterface
     private Index $index;
 
     public function __construct(
-        #[Autowire(env: 'REDIS_SEARCH_HOST')] string $HOST,
-        #[Autowire(env: 'REDIS_SEARCH_PORT')] string $PORT,
-        #[Autowire(env: 'REDIS_SEARCH_TABLE')] string $TABLE,
-        #[Autowire(env: 'REDIS_SEARCH_PASSWORD')] string $PASSWORD,
         #[Target('SearchLogger')] private readonly LoggerInterface $logger,
+        #[Autowire(env: 'REDIS_SEARCH_HOST')] string $HOST,
+        #[Autowire(env: 'REDIS_SEARCH_PORT')] string|int $PORT,
+        #[Autowire(env: 'REDIS_SEARCH_PASSWORD')] string $PASSWORD,
+        #[Autowire(env: 'REDIS_SEARCH_TABLE')] string|int|null $TABLE = 0,
     )
     {
-        $this->initClient($HOST, $PORT, $TABLE, $PASSWORD);
+        $this->initClient($HOST, (int) $PORT, (int) $TABLE, $PASSWORD);
         $this->initIndex();
     }
 
-    public function initClient($host, $port, $table, $password): void
+    public function initClient(string $host, int $port, int $table, string $password): void
     {
         $this->client =
             new PredisAdapter($this->logger)
