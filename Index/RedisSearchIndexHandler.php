@@ -51,7 +51,7 @@ final class RedisSearchIndexHandler implements SearchIndexInterface
         #[Autowire(env: 'REDIS_SEARCH_HOST')] string $HOST,
         #[Autowire(env: 'REDIS_SEARCH_PORT')] string|int $PORT,
         #[Autowire(env: 'REDIS_SEARCH_PASSWORD')] string $PASSWORD,
-        #[Autowire(env: 'REDIS_SEARCH_TABLE')] string|int|null $TABLE = 0,
+        #[Autowire(env: 'REDIS_SEARCH_TABLE')] string|int|null $TABLE = null,
     )
     {
         $this->initClient($HOST, (int) $PORT, (int) $TABLE, $PASSWORD);
