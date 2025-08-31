@@ -25,17 +25,16 @@ namespace BaksDev\SearchRedis\Index\Tests;
 
 use BaksDev\Products\Product\Repository\Search\AllProductsToIndex\AllProductsToIndexResult;
 use BaksDev\Products\Product\Type\Id\ProductUid;
-use BaksDev\SearchRedis\Index\RedisSearchIndexHandler;
 use BaksDev\Products\Product\Type\SearchTags\ProductSearchTag;
+use BaksDev\SearchRedis\Index\RedisSearchIndexHandler;
 use Exception;
+use PHPUnit\Framework\Attributes\Group;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/**
- * @group search
- */
 #[When(env: 'test')]
+#[Group('search')]
 class SearchAddToIndexTest extends KernelTestCase
 {
 

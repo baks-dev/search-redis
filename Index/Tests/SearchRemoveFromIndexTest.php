@@ -27,13 +27,12 @@ use BaksDev\Products\Product\Repository\Search\AllProductsToIndex\AllProductsToI
 use BaksDev\Products\Product\Type\Id\ProductUid;
 use BaksDev\Products\Product\Type\SearchTags\ProductSearchTag;
 use BaksDev\Search\Index\SearchIndexInterface;
+use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\Attribute\When;
 
-/**
- * @group search
- */
 #[When(env: 'test')]
+#[Group('search')]
 class SearchRemoveFromIndexTest extends KernelTestCase
 {
     public static function setUpBeforeClass(): void
