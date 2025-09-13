@@ -23,42 +23,26 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\SearchRedis\Command;
+namespace BaksDev\SearchRedis\Schedule\RedisSearchIndex;
 
+use BaksDev\Core\Messenger\MessageDelay;
 use BaksDev\Core\Messenger\MessageDispatchInterface;
-use BaksDev\Search\Index\SearchIndexInterface;
-use BaksDev\Search\SearchIndex\SearchIndexTagInterface;
-use BaksDev\Search\Type\SearchTags\Collection\SearchIndexTagCollection;
 use BaksDev\SearchRedis\Messenger\RedisSearchIndex\RedisSearchIndexMessage;
-use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Scheduler\Attribute\AsCronTask;
 
-#[AsCommand(
-    name: 'baks:redis:search:index',
-    description: 'Команда для индексации в RediSearch'
-)]
-class RedisSearchIndexCommand extends Command
+#[AsCronTask('0 2 * * *', jitter: 60)]
+final class RedisSearchIndexSchedulesCron
 {
     public function __construct(
-        private readonly MessageDispatchInterface $messageDispatch
-    )
+        private MessageDispatchInterface $messageDispatch
+    ) {}
+
+    public function __invoke(): void
     {
-        parent::__construct();
+        $this->messageDispatch->dispatch(
+            message: new RedisSearchIndexMessage(),
+            stamps: [new MessageDelay('5 minutes')],
+            transport: 'search',
+        );
     }
-
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $RedisSearchIndexMessage = new RedisSearchIndexMessage();
-        $this->messageDispatch->dispatch($RedisSearchIndexMessage);
-
-        $io = new SymfonyStyle($input, $output);
-        $io->success('Команда успешно завершена');
-
-        return Command::SUCCESS;
-    }
-
 }

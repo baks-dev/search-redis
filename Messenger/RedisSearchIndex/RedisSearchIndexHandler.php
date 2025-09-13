@@ -23,42 +23,43 @@
 
 declare(strict_types=1);
 
-namespace BaksDev\SearchRedis\Command;
+namespace BaksDev\SearchRedis\Messenger\RedisSearchIndex;
 
-use BaksDev\Core\Messenger\MessageDispatchInterface;
+
 use BaksDev\Search\Index\SearchIndexInterface;
 use BaksDev\Search\SearchIndex\SearchIndexTagInterface;
 use BaksDev\Search\Type\SearchTags\Collection\SearchIndexTagCollection;
-use BaksDev\SearchRedis\Messenger\RedisSearchIndex\RedisSearchIndexMessage;
-use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Target;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
-#[AsCommand(
-    name: 'baks:redis:search:index',
-    description: 'Команда для индексации в RediSearch'
-)]
-class RedisSearchIndexCommand extends Command
+#[AsMessageHandler(priority: 0)]
+final readonly class RedisSearchIndexHandler
 {
     public function __construct(
-        private readonly MessageDispatchInterface $messageDispatch
-    )
+        #[Target('searchLogger')] private LoggerInterface $logger,
+        private SearchIndexTagCollection $SearchIndexTagCollection,
+        private SearchIndexInterface $SearchIndex,
+    ) {}
+
+    public function __invoke(RedisSearchIndexMessage $message): void
     {
-        parent::__construct();
+        /** @var SearchIndexTagInterface $tag */
+        foreach($this->SearchIndexTagCollection->cases() as $tag)
+        {
+            $repositoryData = $tag->getRepositoryData();
+
+            if($repositoryData === false)
+            {
+                continue;
+            }
+
+            foreach($repositoryData as $item)
+            {
+                $this->SearchIndex->addToIndex($tag->prepareDocument($item));
+            }
+
+            $this->logger->info(sprintf('Добавили индексы поиска модуля %s', $tag->getModuleName()));
+        }
     }
-
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
-        $RedisSearchIndexMessage = new RedisSearchIndexMessage();
-        $this->messageDispatch->dispatch($RedisSearchIndexMessage);
-
-        $io = new SymfonyStyle($input, $output);
-        $io->success('Команда успешно завершена');
-
-        return Command::SUCCESS;
-    }
-
 }
