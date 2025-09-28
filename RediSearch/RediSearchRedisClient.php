@@ -104,11 +104,18 @@ class RediSearchRedisClient implements RedisRawClientInterface
                 /* The various RedisRaw clients have different expectations about arg types, but generally they all
                  * agree that they can be strings.
                  */
-                $arguments[$index] = strval($value);
+                $arguments[$index] = (string) $value;
             }
+
+            /**
+             *
+             * @see PredisAdapter
+             * @see RedisClientAdapter
+             */
             $result = $this->redis->rawCommand($command, $arguments);
+
         } catch (RawCommandErrorException $exception) {
-            $result = $exception->getPrevious()->getMessage();
+            $result = $exception->getPrevious()?->getMessage();
         }
 
         if ($command !== 'FT.EXPLAIN') {
