@@ -73,10 +73,10 @@ final class RedisSearchIndexHandler implements SearchIndexInterface
     {
         $this->index =
             new Index($this->client)
-            ->addTextField('entity_index')
+                ->addTextField('entity_index')
                 ->addTagField('search_tag');
 
-//        $this->index->drop(); die();
+        //        $this->index->drop(); die();
         if(!$this->index->exists())
         {
             $this->index->create();
