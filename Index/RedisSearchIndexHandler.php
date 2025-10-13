@@ -46,6 +46,10 @@ final class RedisSearchIndexHandler implements SearchIndexInterface
 
     private Index $index;
 
+    private int $max;
+
+    private int $offset;
+
     public function __construct(
         #[Target('SearchLogger')] private readonly LoggerInterface $logger,
         #[Autowire(env: 'REDIS_SEARCH_HOST')] string $HOST,
@@ -56,6 +60,10 @@ final class RedisSearchIndexHandler implements SearchIndexInterface
     {
         $this->initClient($HOST, (int) $PORT, (int) $TABLE, $PASSWORD);
         $this->initIndex();
+
+        $this->offset = 0;
+        $this->max = 100;
+
     }
 
     public function initClient(string $host, int $port, int $table, string $password): void
@@ -94,8 +102,21 @@ final class RedisSearchIndexHandler implements SearchIndexInterface
      */
     public function removeFromIndex(EntityDocumentInterface $entityDocument): void
     {
-        $this->index->delete($entityDocument->getId(), TRUE);
+        $this->index->delete($entityDocument->getId(), true);
     }
+
+
+    public function maxResult(int $max): void
+    {
+        $this->max = $max;
+    }
+
+    public function setOffset(int $offset): self
+    {
+        $this->offset = $offset;
+        return $this;
+    }
+
 
     /**
      * Получить результаты по поисковому слову, с учетов тегов
@@ -103,7 +124,8 @@ final class RedisSearchIndexHandler implements SearchIndexInterface
     public function handleSearchQuery(?string $search = null, ?string $searchModule = null): bool|array
     {
         /** @var BuilderInterface $builder */
-        $builder = $this->index->noContent()->limit(0,50);
+        $builder = $this->index->noContent()
+            ->limit($this->offset, $this->max);
 
         if(null !== $searchModule)
         {

@@ -53,7 +53,7 @@ class SearchAddToIndexTest extends KernelTestCase
         try
         {
             $RedisSearchIndexHandler = new RedisSearchIndexHandler(
-                'localhost', '6579', 0, 'Po4ySG7W2EaOl4c',
+                'localhost', '6579', 0, 'password',
                 $logger
             );
 
