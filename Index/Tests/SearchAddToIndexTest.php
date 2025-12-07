@@ -53,8 +53,11 @@ class SearchAddToIndexTest extends KernelTestCase
         try
         {
             $RedisSearchIndexHandler = new RedisSearchIndexHandler(
-                'localhost', '6579', 0, 'password',
-                $logger
+                logger: $logger,
+                HOST: 'localhost',
+                PORT: '6579',
+                PASSWORD: 'password',
+                TABLE: 0,
             );
 
             /** @var ProductSearchTag $tag */
