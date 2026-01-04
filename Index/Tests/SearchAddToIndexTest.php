@@ -37,15 +37,35 @@ use Symfony\Component\DependencyInjection\Attribute\When;
 #[Group('search')]
 class SearchAddToIndexTest extends KernelTestCase
 {
+    private static string|false $HOST;
+
+    private static string|int|false $PORT;
+
+    private static string|false $PASSWORD;
+
+    /** @see .env.test */
+    public static function setUpBeforeClass(): void
+    {
+        self::$HOST = $_SERVER['TEST_REDIS_SEARCH_HOST'] ?? false;
+        self::$PORT = $_SERVER['TEST_REDIS_SEARCH_PORT'] ?? false;
+        self::$PASSWORD = $_SERVER['TEST_REDIS_SEARCH_PASSWORD'] ?? false;
+    }
 
     public function testUseCase(): void
     {
+        if(false === self::$HOST)
+        {
+            self::assertTrue(true);
+            echo PHP_EOL.'Сервер Redis Search не определен либо не запущен : '.self::class.':'.__LINE__.PHP_EOL;
+            return;
+        }
+
         self::bootKernel();
 
         $test_product = new AllProductsToIndexResult(
             ProductUid::TEST,
             'Test Product',
-            'Test-Product-Article'
+            'Test-Product-Article',
         );
 
         $logger = self::getContainer()->get(LoggerInterface::class);
@@ -54,9 +74,9 @@ class SearchAddToIndexTest extends KernelTestCase
         {
             $RedisSearchIndexHandler = new RedisSearchIndexHandler(
                 logger: $logger,
-                HOST: 'localhost',
-                PORT: '6579',
-                PASSWORD: 'password',
+                HOST: self::$HOST,
+                PORT: self::$PORT,
+                PASSWORD: self::$PASSWORD,
                 TABLE: 0,
             );
 
