@@ -22,8 +22,8 @@
   ],
   "require": {
     "php": ">=8.4",
-    "baks-dev/core": "^7.3",
-    "baks-dev/search": "^7.3",
+    "baks-dev/core": "^7.4",
+    "baks-dev/search": "^7.4",
     "predis/predis": "^3.2.0"
   },
   "require-dev": {
