@@ -23,18 +23,19 @@
 
 namespace Symfony\Component\DependencyInjection\Loader\Configurator;
 
+use BaksDev\Search\EntityDocument\EntityDocumentInterface;
 use BaksDev\Search\Index\SearchIndexInterface;
 use BaksDev\SearchRedis\BaksDevSearchRedisBundle;
 use BaksDev\SearchRedis\Index\RedisSearchIndexHandler;
 use BaksDev\SearchRedis\RedisSearchDocuments\RedisEntityDocument;
-use BaksDev\Search\EntityDocument\EntityDocumentInterface;
 
 return static function(ContainerConfigurator $configurator) {
 
     $services = $configurator->services()
         ->defaults()
         ->autowire()
-        ->autoconfigure();
+        ->autoconfigure()//->public()
+    ;
 
     $NAMESPACE = BaksDevSearchRedisBundle::NAMESPACE;
     $PATH = BaksDevSearchRedisBundle::PATH;
