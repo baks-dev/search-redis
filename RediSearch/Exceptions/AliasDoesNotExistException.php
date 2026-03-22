@@ -11,7 +11,7 @@ class AliasDoesNotExistException extends Exception
         parent::__construct(
             trim("Alias does not exist. $message"),
             $code,
-            $previous
+            $previous,
         );
     }
 }

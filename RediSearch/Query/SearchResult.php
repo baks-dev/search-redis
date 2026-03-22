@@ -2,6 +2,8 @@
 
 namespace BaksDev\SearchRedis\RediSearch\Query;
 
+use stdClass;
+
 class SearchResult
 {
     protected $count;
@@ -13,64 +15,64 @@ class SearchResult
         $this->documents = $documents;
     }
 
-    public function getCount(): int
-    {
-        return $this->count;
-    }
-
-    public function getDocuments(): array
-    {
-        return $this->documents;
-    }
-
-
     public static function makeSearchResult(
         array $rawRediSearchResult,
         bool $documentsAsArray,
         bool $withScores = false,
         bool $withPayloads = false,
         bool $noContent = false
-    ) {
+    )
+    {
         $documentWidth = $noContent ? 1 : 2;
 
-        if (!$rawRediSearchResult) {
+        if(!$rawRediSearchResult)
+        {
             return false;
         }
 
-        if (count($rawRediSearchResult) === 1) {
+        if(count($rawRediSearchResult) === 1)
+        {
             return new SearchResult(0, []);
         }
 
-        if ($withScores) {
+        if($withScores)
+        {
             $documentWidth++;
         }
 
-        if ($withPayloads) {
+        if($withPayloads)
+        {
             $documentWidth++;
         }
 
         $count = array_shift($rawRediSearchResult);
         $documents = [];
-        for ($i = 0; $i < count($rawRediSearchResult); $i += $documentWidth) {
-            $document = $documentsAsArray ? [] : new \stdClass();
+        for($i = 0; $i < count($rawRediSearchResult); $i += $documentWidth)
+        {
+            $document = $documentsAsArray ? [] : new stdClass();
             $documentsAsArray ?
                 $document['id'] = $rawRediSearchResult[$i] :
                 $document->id = $rawRediSearchResult[$i];
-            if ($withScores) {
+            if($withScores)
+            {
                 $documentsAsArray ?
-                    $document['score'] = $rawRediSearchResult[$i+1] :
-                    $document->score = $rawRediSearchResult[$i+1];
+                    $document['score'] = $rawRediSearchResult[$i + 1] :
+                    $document->score = $rawRediSearchResult[$i + 1];
             }
-            if ($withPayloads) {
+            if($withPayloads)
+            {
                 $j = $withScores ? 2 : 1;
                 $documentsAsArray ?
-                    $document['payload'] = $rawRediSearchResult[$i+$j] :
-                    $document->payload = $rawRediSearchResult[$i+$j];
+                    $document['payload'] = $rawRediSearchResult[$i + $j] :
+                    $document->payload = $rawRediSearchResult[$i + $j];
             }
-            if (!$noContent) {
+            if(!$noContent)
+            {
                 $fields = $rawRediSearchResult[$i + ($documentWidth - 1)];
-                if (is_array($fields)) {
-                    for ($j = 0; $j < count($fields); $j += 2) {
+                if(is_array($fields))
+                {
+                    for($j = 0; $j < count($fields); $j += 2)
+                    {
                         $documentsAsArray ?
                             $document[$fields[$j]] = $fields[$j + 1] :
                             $document->{$fields[$j]} = $fields[$j + 1];
@@ -80,5 +82,15 @@ class SearchResult
             $documents[] = $document;
         }
         return new SearchResult($count, $documents);
+    }
+
+    public function getCount(): int
+    {
+        return $this->count;
+    }
+
+    public function getDocuments(): array
+    {
+        return $this->documents;
     }
 }

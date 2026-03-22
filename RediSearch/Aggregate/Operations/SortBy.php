@@ -17,19 +17,20 @@ class SortBy extends AbstractFieldNameOperation
     public function toArray(): array
     {
         $options = [
-            $this->isAscending ? 'ASC' : 'DESC'
+            $this->isAscending ? 'ASC' : 'DESC',
         ];
         $count = count($this->fieldNames) + count($options);
-        if ($this->max >= 0) {
+        if($this->max >= 0)
+        {
             $options[] = 'MAX';
             $options[] = $this->max;
         }
         return $count > 0 ? array_merge(
             [$this->operationName, $count],
-            array_map(function ($fieldName) {
+            array_map(function($fieldName) {
                 return "@$fieldName";
             }, $this->fieldNames),
-            $options
+            $options,
         ) : [];
     }
 }

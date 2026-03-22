@@ -8,6 +8,9 @@ use BaksDev\SearchRedis\RediSearch\Aggregate\Operations\GroupBy;
 use BaksDev\SearchRedis\RediSearch\Aggregate\Operations\Limit;
 use BaksDev\SearchRedis\RediSearch\Aggregate\Operations\Load;
 use BaksDev\SearchRedis\RediSearch\Aggregate\Operations\SortBy;
+use BaksDev\SearchRedis\RediSearch\Aggregate\Reducers\Avg;
+use BaksDev\SearchRedis\RediSearch\Aggregate\Reducers\Count;
+use BaksDev\SearchRedis\RediSearch\Aggregate\Reducers\CountDistinct;
 use BaksDev\SearchRedis\RediSearch\Aggregate\Reducers\CountDistinctApproximate;
 use BaksDev\SearchRedis\RediSearch\Aggregate\Reducers\FirstValue;
 use BaksDev\SearchRedis\RediSearch\Aggregate\Reducers\Max;
@@ -17,17 +20,14 @@ use BaksDev\SearchRedis\RediSearch\Aggregate\Reducers\StandardDeviation;
 use BaksDev\SearchRedis\RediSearch\Aggregate\Reducers\Sum;
 use BaksDev\SearchRedis\RediSearch\Aggregate\Reducers\ToList;
 use BaksDev\SearchRedis\RediSearch\CanBecomeArrayInterface;
-use BaksDev\SearchRedisRaw\Exceptions\RedisRawCommandException;
 use BaksDev\SearchRedis\RediSearchRedisearchRedisClient;
-use BaksDev\SearchRedis\RediSearch\Aggregate\Reducers\Avg;
-use BaksDev\SearchRedis\RediSearch\Aggregate\Reducers\Count;
-use BaksDev\SearchRedis\RediSearch\Aggregate\Reducers\CountDistinct;
+use BaksDev\SearchRedisRaw\Exceptions\RedisRawCommandException;
 
 class Builder implements BuilderInterface
 {
     protected $redis;
-    private $indexName = '';
     protected $pipeline = [];
+    private $indexName = '';
     private $load = [];
 
 
@@ -55,7 +55,9 @@ class Builder implements BuilderInterface
 
     /**
      * Only use this method if absolutely necessary. It has a detrimental impact on performance.
+     *
      * @param array $fieldNames
+     *
      * @return BuilderInterface
      */
     public function load(array $fieldNames): BuilderInterface
@@ -67,12 +69,14 @@ class Builder implements BuilderInterface
     /**
      * @param string|array $fieldName
      * @param CanBecomeArrayInterface|array $reducer
+     *
      * @return BuilderInterface
      */
     public function groupBy($fieldName = [], ?CanBecomeArrayInterface $reducer = null): BuilderInterface
     {
         $this->pipeline[] = new GroupBy(is_array($fieldName) ? $fieldName : [$fieldName]);
-        if (!is_null($reducer)) {
+        if(!is_null($reducer))
+        {
             $this->reduce($reducer);
         }
         return $this;
@@ -80,6 +84,7 @@ class Builder implements BuilderInterface
 
     /**
      * @param CanBecomeArrayInterface $reducer
+     *
      * @return BuilderInterface
      */
     public function reduce(CanBecomeArrayInterface $reducer): BuilderInterface
@@ -90,6 +95,7 @@ class Builder implements BuilderInterface
 
     /**
      * @param string $fieldName
+     *
      * @return BuilderInterface
      */
     public function avg(string $fieldName): BuilderInterface
@@ -100,6 +106,7 @@ class Builder implements BuilderInterface
 
     /**
      * @param int $group
+     *
      * @return BuilderInterface
      */
     public function count(int $group = 0): BuilderInterface
@@ -110,6 +117,7 @@ class Builder implements BuilderInterface
 
     /**
      * @param string $fieldName
+     *
      * @return BuilderInterface
      */
     public function countDistinct(string $fieldName): BuilderInterface
@@ -120,6 +128,7 @@ class Builder implements BuilderInterface
 
     /**
      * @param array|string $fieldName
+     *
      * @return BuilderInterface
      */
     public function countDistinctApproximate(string $fieldName): BuilderInterface
@@ -130,6 +139,7 @@ class Builder implements BuilderInterface
 
     /**
      * @param string $fieldName
+     *
      * @return BuilderInterface
      */
     public function sum(string $fieldName): BuilderInterface
@@ -140,6 +150,7 @@ class Builder implements BuilderInterface
 
     /**
      * @param string $fieldName
+     *
      * @return BuilderInterface
      */
     public function max(string $fieldName): BuilderInterface
@@ -150,6 +161,7 @@ class Builder implements BuilderInterface
 
     /**
      * @param string $fieldName
+     *
      * @return BuilderInterface
      */
     public function min(string $fieldName): BuilderInterface
@@ -161,6 +173,7 @@ class Builder implements BuilderInterface
     /**
      * @param string $fieldName
      * @param float $quantile
+     *
      * @return BuilderInterface
      */
     public function quantile(string $fieldName, float $quantile): BuilderInterface
@@ -171,6 +184,7 @@ class Builder implements BuilderInterface
 
     /**
      * @param string $fieldName
+     *
      * @return BuilderInterface
      */
     public function standardDeviation(string $fieldName): BuilderInterface
@@ -183,9 +197,14 @@ class Builder implements BuilderInterface
      * @param string $fieldName
      * @param string|null $byFieldName
      * @param bool $isAscending
+     *
      * @return BuilderInterface
      */
-    public function firstValue(string $fieldName, ?string $byFieldName = null, bool $isAscending = true): BuilderInterface
+    public function firstValue(
+        string $fieldName,
+        ?string $byFieldName = null,
+        bool $isAscending = true
+    ): BuilderInterface
     {
         $this->pipeline[] = new FirstValue($fieldName, $byFieldName, $isAscending);
         return $this;
@@ -193,6 +212,7 @@ class Builder implements BuilderInterface
 
     /**
      * @param string $fieldName
+     *
      * @return BuilderInterface
      */
     public function toList(string $fieldName): BuilderInterface
@@ -205,6 +225,7 @@ class Builder implements BuilderInterface
      * @param array|string $fieldName
      * @param bool $isAscending
      * @param int $max
+     *
      * @return BuilderInterface
      */
     public function sortBy($fieldName, $isAscending = true, int $max = -1): BuilderInterface
@@ -216,6 +237,7 @@ class Builder implements BuilderInterface
     /**
      * @param string $expression An expression that can be used to perform arithmetic operations on numeric properties.
      * @param string $asFieldName The name of the fieldName to add or replace.
+     *
      * @return BuilderInterface
      */
     public function apply(string $expression, string $asFieldName): BuilderInterface
@@ -226,6 +248,7 @@ class Builder implements BuilderInterface
 
     /**
      * @param string $expression
+     *
      * @return BuilderInterface
      */
     public function filter(string $expression): BuilderInterface
@@ -237,6 +260,7 @@ class Builder implements BuilderInterface
     /**
      * @param int $offset
      * @param int $pageSize
+     *
      * @return BuilderInterface
      */
     public function limit(int $offset, int $pageSize = 10): BuilderInterface
@@ -247,33 +271,8 @@ class Builder implements BuilderInterface
 
     /**
      * @param string $query
-     * @return array
-     */
-    public function makeAggregateCommandArguments(string $query): array
-    {
-        $pipelineOperations = array_map(function (CanBecomeArrayInterface $operation) {
-            return $operation->toArray();
-        }, $this->pipeline);
-
-        $pipelineOperations = array_reduce($pipelineOperations, function ($prev, $next) {
-            return is_null($prev) ? $next : array_merge($prev, $next);
-        });
-
-        return array_filter(
-            array_merge(
-                trim($query) === '' ? [$this->indexName] : [$this->indexName, $query],
-                $this->load,
-                $pipelineOperations
-            ),
-            function ($item) {
-                return !is_null($item) && $item !== '';
-            }
-        );
-    }
-
-    /**
-     * @param string $query
      * @param bool $documentsAsArray
+     *
      * @return AggregationResult
      * @throws RedisRawCommandException
      */
@@ -282,12 +281,39 @@ class Builder implements BuilderInterface
         $args = $this->makeAggregateCommandArguments($query === '' ? '*' : $query);
         $rawResult = $this->redis->rawCommand(
             'FT.AGGREGATE',
-            $args
+            $args,
         );
 
         return $rawResult ? AggregationResult::makeAggregationResult(
             $rawResult,
-            $documentsAsArray
+            $documentsAsArray,
         ) : new AggregationResult(0, []);
+    }
+
+    /**
+     * @param string $query
+     *
+     * @return array
+     */
+    public function makeAggregateCommandArguments(string $query): array
+    {
+        $pipelineOperations = array_map(function(CanBecomeArrayInterface $operation) {
+            return $operation->toArray();
+        }, $this->pipeline);
+
+        $pipelineOperations = array_reduce($pipelineOperations, function($prev, $next) {
+            return is_null($prev) ? $next : array_merge($prev, $next);
+        });
+
+        return array_filter(
+            array_merge(
+                trim($query) === '' ? [$this->indexName] : [$this->indexName, $query],
+                $this->load,
+                $pipelineOperations,
+            ),
+            function($item) {
+                return !is_null($item) && $item !== '';
+            },
+        );
     }
 }

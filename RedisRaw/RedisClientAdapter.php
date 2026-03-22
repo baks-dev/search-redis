@@ -2,11 +2,12 @@
 
 namespace BaksDev\SearchRedis\RedisRaw;
 
-use RedisClient\RedisClient;
 use RedisClient\Exception\ErrorResponseException;
+use RedisClient\RedisClient;
 
 /**
  * Class RedisClientAdapter
+ *
  * @package BaksDev\SearchRedis\RedisRaw
  *
  * This class wraps the Cheprasov client: https://github.com/cheprasov/php-redis-client
@@ -40,9 +41,12 @@ class RedisClientAdapter extends AbstractRedisRawClient
     {
         $arguments = $this->prepareRawCommandArguments($command, $arguments);
         $rawResult = null;
-        try {
+        try
+        {
             $rawResult = $this->redis->executeRaw($arguments);
-        } catch (ErrorResponseException $exception) {
+        }
+        catch(ErrorResponseException $exception)
+        {
             $this->validateRawCommandResults($exception, $command, $arguments);
         }
         return $this->normalizeRawCommandResult($rawResult);

@@ -4,23 +4,9 @@ namespace BaksDev\SearchRedis\RediSearch;
 
 class RuntimeConfiguration extends AbstractRediSearchClientAdapter
 {
-    protected function getOption($name)
+    public function getMinPrefix(): int
     {
-        return $this->rawCommand('FT.CONFIG', ['GET', $name]);
-    }
-
-    protected function setOption($name, $value)
-    {
-        return $this->rawCommand('FT.CONFIG', ['SET', $name, $value]);
-    }
-
-    protected function convertRawResponseToString(array $rawResponse): string
-    {
-        $value = $rawResponse[0][1];
-        if (is_object($value) && method_exists($value, 'getPayload')) {
-            $value = $value->getPayload();
-        }
-        return $value;
+        return $this->convertRawResponseToInt($this->getOption('MINPREFIX'));
     }
 
     protected function convertRawResponseToInt($rawResponse): int
@@ -28,14 +14,29 @@ class RuntimeConfiguration extends AbstractRediSearchClientAdapter
         return intval($this->convertRawResponseToString($rawResponse));
     }
 
-    public function getMinPrefix(): int
+    protected function convertRawResponseToString(array $rawResponse): string
     {
-        return $this->convertRawResponseToInt($this->getOption('MINPREFIX'));
+        $value = $rawResponse[0][1];
+        if(is_object($value) && method_exists($value, 'getPayload'))
+        {
+            $value = $value->getPayload();
+        }
+        return $value;
+    }
+
+    protected function getOption($name)
+    {
+        return $this->rawCommand('FT.CONFIG', ['GET', $name]);
     }
 
     public function setMinPrefix(int $value = 2)
     {
         return $this->setOption('MINPREFIX', $value);
+    }
+
+    protected function setOption($name, $value)
+    {
+        return $this->rawCommand('FT.CONFIG', ['SET', $name, $value]);
     }
 
     public function getMaxExpansions(): int

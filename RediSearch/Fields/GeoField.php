@@ -14,7 +14,8 @@ class GeoField extends AbstractField
     public function getTypeDefinition(): array
     {
         $properties = parent::getTypeDefinition();
-        if ($this->isNoindex()) {
+        if($this->isNoindex())
+        {
             $properties[] = 'NOINDEX';
         }
 

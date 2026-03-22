@@ -14,6 +14,26 @@ class TagField extends AbstractField
         return 'TAG';
     }
 
+    public function getTypeDefinition(): array
+    {
+        $properties = parent::getTypeDefinition();
+
+        $properties[] = 'SEPARATOR';
+        $properties[] = $this->getSeparator();
+
+        if($this->isSortable())
+        {
+            $properties[] = 'SORTABLE';
+        }
+
+        if($this->isNoindex())
+        {
+            $properties[] = 'NOINDEX';
+        }
+
+        return $properties;
+    }
+
     public function getSeparator(): string
     {
         return $this->separator;
@@ -23,23 +43,5 @@ class TagField extends AbstractField
     {
         $this->separator = $separator;
         return $this;
-    }
-
-    public function getTypeDefinition(): array
-    {
-        $properties = parent::getTypeDefinition();
-
-        $properties[] = 'SEPARATOR';
-        $properties[] = $this->getSeparator();
-
-        if ($this->isSortable()) {
-            $properties[] = 'SORTABLE';
-        }
-
-        if ($this->isNoindex()) {
-            $properties[] = 'NOINDEX';
-        }
-
-        return $properties;
     }
 }

@@ -19,9 +19,9 @@ abstract class AbstractFieldNameOperation implements CanBecomeArrayInterface
     {
         return array_merge(
             [$this->operationName, count($this->fieldNames)],
-            array_map(function ($fieldName) {
+            array_map(function($fieldName) {
                 return "@$fieldName";
-            }, $this->fieldNames)
+            }, $this->fieldNames),
         );
     }
 }

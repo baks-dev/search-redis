@@ -11,7 +11,7 @@ class UnknownRediSearchCommandException extends Exception
         parent::__construct(
             trim("Unknown RediSearch command. Are you sure the RediSearch module is enabled in Redis? $message"),
             $code,
-            $previous
+            $previous,
         );
     }
 }

@@ -25,53 +25,6 @@ class RediSearchRedisClient implements RedisRawClientInterface
         $this->redis = $redis;
     }
 
-    /**
-     * @throws RediSearchException
-     * @throws DocumentAlreadyInIndexException
-     * @throws UnknownIndexNameException
-     * @throws UnsupportedRediSearchLanguageException
-     * @throws AliasDoesNotExistException
-     * @throws UnknownRediSearchCommandException
-     * @throws UnknownIndexNameOrNameIsAnAliasItselfException
-     */
-    public function validateRawCommandResults($rawResult, string $command, array $arguments)
-    {
-        $isRawResultException = $rawResult instanceof Exception;
-        $message = $isRawResultException ? $rawResult->getMessage() : $rawResult;
-
-        if (!is_string($message)) {
-            return;
-        }
-
-        $message = strtolower($message);
-
-        if ($message === 'unknown index name') {
-            throw new UnknownIndexNameException();
-        }
-
-        if (in_array($message, ['no such language', 'unsupported language', 'unsupported stemmer language', 'bad argument for `language`'])) {
-            throw new UnsupportedRediSearchLanguageException();
-        }
-
-        if ($message === 'unknown index name (or name is an alias itself)') {
-            throw new UnknownIndexNameOrNameIsAnAliasItselfException();
-        }
-
-        if ($message === 'alias does not exist') {
-            throw new AliasDoesNotExistException();
-        }
-
-        if (strpos($message, 'err unknown command \'ft.') !== false) {
-            throw new UnknownRediSearchCommandException($message);
-        }
-
-        if (in_array($message, ['document already in index', 'document already exists'])) {
-            throw new DocumentAlreadyInIndexException($arguments[0], $arguments[1]);
-        }
-
-        throw new RediSearchException($rawResult);
-    }
-
     public function connect($hostname = '127.0.0.1', $port = 6379, $db = 0, $password = null): RedisRawClientInterface
     {
         $this->redis->connect($hostname, $port, $db, $password);
@@ -99,8 +52,10 @@ class RediSearchRedisClient implements RedisRawClientInterface
      */
     public function rawCommand(string $command, array $arguments = [])
     {
-        try {
-            foreach ($arguments as $index => $value) {
+        try
+        {
+            foreach($arguments as $index => $value)
+            {
                 /* The various RedisRaw clients have different expectations about arg types, but generally they all
                  * agree that they can be strings.
                  */
@@ -114,15 +69,72 @@ class RediSearchRedisClient implements RedisRawClientInterface
              */
             $result = $this->redis->rawCommand($command, $arguments);
 
-        } catch (RawCommandErrorException $exception) {
+        }
+        catch(RawCommandErrorException $exception)
+        {
             $result = $exception->getPrevious()?->getMessage();
         }
 
-        if ($command !== 'FT.EXPLAIN') {
+        if($command !== 'FT.EXPLAIN')
+        {
             $this->validateRawCommandResults($result, $command, $arguments);
         }
 
         return $result;
+    }
+
+    /**
+     * @throws RediSearchException
+     * @throws DocumentAlreadyInIndexException
+     * @throws UnknownIndexNameException
+     * @throws UnsupportedRediSearchLanguageException
+     * @throws AliasDoesNotExistException
+     * @throws UnknownRediSearchCommandException
+     * @throws UnknownIndexNameOrNameIsAnAliasItselfException
+     */
+    public function validateRawCommandResults($rawResult, string $command, array $arguments)
+    {
+        $isRawResultException = $rawResult instanceof Exception;
+        $message = $isRawResultException ? $rawResult->getMessage() : $rawResult;
+
+        if(!is_string($message))
+        {
+            return;
+        }
+
+        $message = strtolower($message);
+
+        if($message === 'unknown index name')
+        {
+            throw new UnknownIndexNameException();
+        }
+
+        if(in_array($message, ['no such language', 'unsupported language', 'unsupported stemmer language', 'bad argument for `language`']))
+        {
+            throw new UnsupportedRediSearchLanguageException();
+        }
+
+        if($message === 'unknown index name (or name is an alias itself)')
+        {
+            throw new UnknownIndexNameOrNameIsAnAliasItselfException();
+        }
+
+        if($message === 'alias does not exist')
+        {
+            throw new AliasDoesNotExistException();
+        }
+
+        if(strpos($message, 'err unknown command \'ft.') !== false)
+        {
+            throw new UnknownRediSearchCommandException($message);
+        }
+
+        if(in_array($message, ['document already in index', 'document already exists']))
+        {
+            throw new DocumentAlreadyInIndexException($arguments[0], $arguments[1]);
+        }
+
+        throw new RediSearchException($rawResult);
     }
 
     public function setLogger(LoggerInterface $logger): RedisRawClientInterface

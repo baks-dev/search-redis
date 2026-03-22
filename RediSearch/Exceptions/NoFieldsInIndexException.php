@@ -11,7 +11,7 @@ class NoFieldsInIndexException extends Exception
         parent::__construct(
             trim("There needs to be at least one field defined as a property in the index. $message"),
             $code,
-            $previous
+            $previous,
         );
     }
 }

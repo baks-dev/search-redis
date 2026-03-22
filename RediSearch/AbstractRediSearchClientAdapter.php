@@ -17,6 +17,7 @@ abstract class AbstractRediSearchClientAdapter
     /**
      * @param string $command
      * @param array $arguments
+     *
      * @return mixed
      */
     protected function rawCommand(string $command, array $arguments)

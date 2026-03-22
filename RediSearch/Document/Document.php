@@ -23,77 +23,29 @@ class Document implements DocumentInterface
         $this->id = $id ?? uniqid(true);
     }
 
-    protected function addFieldsToProperties($properties): array
-    {
-        /** @var FieldInterface $field */
-        foreach (get_object_vars($this) as $field) {
-            if ($field instanceof FieldInterface && !is_null($field->getValue())) {
-                $properties[] = $field->getName();
-                $properties[] = $field->getValue();
-            }
-        }
-        return $properties;
-    }
-
     public function getHashDefinition(?array $prefixes = null): array
     {
         $id = $this->getId();
         $completeId = !is_null($prefixes) && count($prefixes) > 0 ?
-            implode(':', $prefixes) . ':' . $id :
+            implode(':', $prefixes).':'.$id :
             $id;
 
         $properties = [
             $completeId,
             '__score',
-            $this->score
+            $this->score,
         ];
 
-        if (!is_null($this->getLanguage())) {
+        if(!is_null($this->getLanguage()))
+        {
             $properties[] = '__language';
             $properties[] = $this->getLanguage();
         }
 
-        if ($this->isReplace()) {
+        if($this->isReplace())
+        {
             $properties[] = 'REPLACE';
         }
-
-        return $this->addFieldsToProperties($properties);
-    }
-
-    public function getDefinition(): array
-    {
-        $properties = [
-            $this->getId(),
-            $this->getScore(),
-        ];
-
-        if ($this->isNoSave()) {
-            $properties[] = 'NOSAVE';
-        }
-
-        if ($this->isReplace()) {
-            $properties[] = 'REPLACE';
-
-            if ($this->isPartial()) {
-                $properties[] = 'PARTIAL';
-            }
-
-            if ($this->isNoCreate()) {
-                $properties[] = 'NOCREATE';
-            }
-        }
-
-        if (!is_null($this->getLanguage())) {
-            $properties[] = 'LANGUAGE';
-            $properties[] = $this->getLanguage();
-        }
-
-        if (!is_null($this->getPayload())) {
-            $properties[] = 'PAYLOAD';
-            $properties[] = $this->getPayload();
-        }
-
-        $properties[] = 'FIELDS';
 
         return $this->addFieldsToProperties($properties);
     }
@@ -109,6 +61,86 @@ class Document implements DocumentInterface
         return $this;
     }
 
+    public function getLanguage()
+    {
+        return $this->language;
+    }
+
+    public function setLanguage($language)
+    {
+        $this->language = $language;
+        return $this;
+    }
+
+    public function isReplace(): bool
+    {
+        return $this->replace;
+    }
+
+    public function setReplace(bool $replace): Document
+    {
+        $this->replace = $replace;
+        return $this;
+    }
+
+    protected function addFieldsToProperties($properties): array
+    {
+        /** @var FieldInterface $field */
+        foreach(get_object_vars($this) as $field)
+        {
+            if($field instanceof FieldInterface && !is_null($field->getValue()))
+            {
+                $properties[] = $field->getName();
+                $properties[] = $field->getValue();
+            }
+        }
+        return $properties;
+    }
+
+    public function getDefinition(): array
+    {
+        $properties = [
+            $this->getId(),
+            $this->getScore(),
+        ];
+
+        if($this->isNoSave())
+        {
+            $properties[] = 'NOSAVE';
+        }
+
+        if($this->isReplace())
+        {
+            $properties[] = 'REPLACE';
+
+            if($this->isPartial())
+            {
+                $properties[] = 'PARTIAL';
+            }
+
+            if($this->isNoCreate())
+            {
+                $properties[] = 'NOCREATE';
+            }
+        }
+
+        if(!is_null($this->getLanguage()))
+        {
+            $properties[] = 'LANGUAGE';
+            $properties[] = $this->getLanguage();
+        }
+
+        if(!is_null($this->getPayload()))
+        {
+            $properties[] = 'PAYLOAD';
+            $properties[] = $this->getPayload();
+        }
+
+        $properties[] = 'FIELDS';
+
+        return $this->addFieldsToProperties($properties);
+    }
+
     public function getScore(): float
     {
         return $this->score;
@@ -116,7 +148,8 @@ class Document implements DocumentInterface
 
     public function setScore(float $score)
     {
-        if ($score < 0.0 || $score > 1.0) {
+        if($score < 0.0 || $score > 1.0)
+        {
             throw new OutOfRangeDocumentScoreException();
         }
         $this->score = $score;
@@ -131,17 +164,6 @@ class Document implements DocumentInterface
     public function setNoSave(bool $noSave): Document
     {
         $this->noSave = $noSave;
-        return $this;
-    }
-
-    public function isReplace(): bool
-    {
-        return $this->replace;
-    }
-
-    public function setReplace(bool $replace): Document
-    {
-        $this->replace = $replace;
         return $this;
     }
 
@@ -175,17 +197,6 @@ class Document implements DocumentInterface
     public function setPayload($payload)
     {
         $this->payload = $payload;
-        return $this;
-    }
-
-    public function getLanguage()
-    {
-        return $this->language;
-    }
-
-    public function setLanguage($language)
-    {
-        $this->language = $language;
         return $this;
     }
 }

@@ -11,7 +11,7 @@ class UnknownIndexNameOrNameIsAnAliasItselfException extends Exception
         parent::__construct(
             trim("Unknown index name (or name is an alias itself). $message"),
             $code,
-            $previous
+            $previous,
         );
     }
 }

@@ -52,7 +52,12 @@ class Builder implements BuilderInterface
         return $this;
     }
 
-    public function summarize(array $fields, int $fragmentCount = 3, int $fragmentLength = 50, string $separator = '...'): BuilderInterface
+    public function summarize(
+        array $fields,
+        int $fragmentCount = 3,
+        int $fragmentLength = 50,
+        string $separator = '...'
+    ): BuilderInterface
     {
         $count = empty($fields) ? 0 : count($fields);
         $field = implode(' ', $fields);
@@ -60,7 +65,11 @@ class Builder implements BuilderInterface
         return $this;
     }
 
-    public function highlight(array $fields, string $openTag = '<strong>', string $closeTag = '</strong>'): BuilderInterface
+    public function highlight(
+        array $fields,
+        string $openTag = '<strong>',
+        string $closeTag = '</strong>'
+    ): BuilderInterface
     {
         $count = empty($fields) ? 0 : count($fields);
         $field = implode(' ', $fields);
@@ -80,21 +89,15 @@ class Builder implements BuilderInterface
         return $this;
     }
 
-    public function limit(int $offset, int $pageSize = 10): BuilderInterface
-    {
-        $this->limit = "LIMIT $offset $pageSize";
-        return $this;
-    }
-
     public function inFields(int $number, array $fields): BuilderInterface
     {
-        $this->inFields = "INFIELDS $number " . implode(' ', $fields);
+        $this->inFields = "INFIELDS $number ".implode(' ', $fields);
         return $this;
     }
 
     public function inKeys(int $number, array $keys): BuilderInterface
     {
-        $this->inKeys = "INKEYS $number " . implode(' ', $keys);
+        $this->inKeys = "INKEYS $number ".implode(' ', $keys);
         return $this;
     }
 
@@ -130,13 +133,16 @@ class Builder implements BuilderInterface
 
     public function tagFilter(string $fieldName, array $values, ?array $charactersToEscape = null): BuilderInterface
     {
-        if ($charactersToEscape == null) {
+        if($charactersToEscape == null)
+        {
             $charactersToEscape = [' ', '-'];
         }
         $escapedValues = [];
-        foreach ($values as $value) {
+        foreach($values as $value)
+        {
             $escapedValue = $value;
-            foreach ($charactersToEscape as $character) {
+            foreach($charactersToEscape as $character)
+            {
                 $escapedValue = str_replace($character, "\\$character", $escapedValue);
             }
             $escapedValues[] = $escapedValue;
@@ -153,9 +159,16 @@ class Builder implements BuilderInterface
         return $this;
     }
 
-    public function geoFilter(string $fieldName, float $longitude, float $latitude, float $radius, string $distanceUnit = 'km'): BuilderInterface
+    public function geoFilter(
+        string $fieldName,
+        float $longitude,
+        float $latitude,
+        float $radius,
+        string $distanceUnit = 'km'
+    ): BuilderInterface
     {
-        if (!in_array($distanceUnit, self::GEO_FILTER_UNITS)) {
+        if(!in_array($distanceUnit, self::GEO_FILTER_UNITS))
+        {
             throw new InvalidArgumentException($distanceUnit);
         }
 
@@ -181,15 +194,15 @@ class Builder implements BuilderInterface
         return $this;
     }
 
-    protected function explodeArgument(?string $argument): array
+    public function explain(string $query): string
     {
-        return explode(' ', $argument ?? '');
+        return $this->redis->rawCommand('FT.EXPLAIN', $this->makeSearchCommandArguments($query));
     }
 
     public function makeSearchCommandArguments(string $query): array
     {
         $queryParts = array_merge([$query], $this->tagFilters, $this->numericFilters, $this->geoFilters);
-        $queryWithFilters = "'" . trim(implode(' ', $queryParts)) . "'";
+        $queryWithFilters = "'".trim(implode(' ', $queryParts))."'";
 
         return array_filter(
             array_merge(
@@ -214,10 +227,20 @@ class Builder implements BuilderInterface
                 $this->explodeArgument($this->expander),
                 $this->explodeArgument($this->payload),
             ),
-            function ($item) {
+            function($item) {
                 return !is_null($item) && $item !== '';
-            }
+            },
         );
+    }
+
+    protected function explodeArgument(?string $argument): array
+    {
+        return explode(' ', $argument ?? '');
+    }
+
+    public function count(string $query = ''): int
+    {
+        return $this->limit(0, 0)->search($query)->getCount();
     }
 
     public function search(string $query = '', bool $documentsAsArray = false): SearchResult
@@ -225,11 +248,13 @@ class Builder implements BuilderInterface
 
         $rawResult = $this->redis->rawCommand('FT.SEARCH', $this->makeSearchCommandArguments($query));
 
-        if (!$rawResult) {
+        if(!$rawResult)
+        {
             return new SearchResult(0, []);
         }
 
-        if (is_array($rawResult) && count($rawResult) == 1) {
+        if(is_array($rawResult) && count($rawResult) == 1)
+        {
             return new SearchResult($rawResult[0], []);
         }
 
@@ -238,17 +263,13 @@ class Builder implements BuilderInterface
             $documentsAsArray,
             $this->withScores !== '',
             $this->withPayloads !== '',
-            $this->noContent !== ''
+            $this->noContent !== '',
         );
     }
 
-    public function explain(string $query): string
+    public function limit(int $offset, int $pageSize = 10): BuilderInterface
     {
-        return $this->redis->rawCommand('FT.EXPLAIN', $this->makeSearchCommandArguments($query));
-    }
-
-    public function count(string $query = ''): int
-    {
-        return $this->limit(0, 0)->search($query)->getCount();
+        $this->limit = "LIMIT $offset $pageSize";
+        return $this;
     }
 }

@@ -13,6 +13,7 @@ class Suggestion extends AbstractIndex
      * @param float $score
      * @param bool $increment
      * @param null $payload
+     *
      * @return int
      */
     public function add(string $string, float $score, bool $increment = false, $payload = null)
@@ -20,12 +21,14 @@ class Suggestion extends AbstractIndex
         $args = [
             $this->indexName,
             $string,
-            $score
+            $score,
         ];
-        if ($increment) {
+        if($increment)
+        {
             $args[] = 'INCR';
         }
-        if (!is_null($payload)) {
+        if(!is_null($payload))
+        {
             $args[] = 'PAYLOAD';
             $args[] = $payload;
         }
@@ -36,6 +39,7 @@ class Suggestion extends AbstractIndex
      * Delete a string from a suggestion index.
      *
      * @param string $string
+     *
      * @return bool
      */
     public function delete(string $string): bool
@@ -61,24 +65,35 @@ class Suggestion extends AbstractIndex
      * @param bool $withPayloads
      * @param bool $withScores
      * @param int $max
+     *
      * @return array
      */
-    public function get(string $prefix, bool $fuzzy = false, bool $withPayloads = false, int $max = -1, bool $withScores = false): array
+    public function get(
+        string $prefix,
+        bool $fuzzy = false,
+        bool $withPayloads = false,
+        int $max = -1,
+        bool $withScores = false
+    ): array
     {
         $args = [
             $this->indexName,
             $prefix,
         ];
-        if ($fuzzy) {
+        if($fuzzy)
+        {
             $args[] = 'FUZZY';
         }
-        if ($withPayloads) {
+        if($withPayloads)
+        {
             $args[] = 'WITHPAYLOADS';
         }
-        if ($withScores) {
+        if($withScores)
+        {
             $args[] = 'WITHSCORES';
         }
-        if ($max >= 0) {
+        if($max >= 0)
+        {
             $args[] = 'MAX';
             $args[] = $max;
         }

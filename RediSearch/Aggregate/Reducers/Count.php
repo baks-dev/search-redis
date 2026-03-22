@@ -8,8 +8,8 @@ class Count implements CanBecomeArrayInterface
 {
     use Aliasable;
 
-    private $group;
     protected $reducerKeyword = 'COUNT';
+    private $group;
 
     public function __construct(int $group)
     {

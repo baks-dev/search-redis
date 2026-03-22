@@ -16,10 +16,10 @@ abstract class AbstractRedisRawClient implements RedisRawClientInterface
     public $redis;
 
     protected LoggerInterface $logger;
-//
-//    public function __construct(protected LoggerInterface $logger) {
-////        $this->logger = $logger;
-//    }
+    //
+    //    public function __construct(protected LoggerInterface $logger) {
+    ////        $this->logger = $logger;
+    //    }
 
     public function connect($hostname = '127.0.0.1', $port = 6379, $db = 0, $password = null): RedisRawClientInterface
     {
@@ -31,18 +31,15 @@ abstract class AbstractRedisRawClient implements RedisRawClientInterface
         $this->redis->flushAll();
     }
 
-    public function multi(bool $usePipeline = false)
-    {
-    }
+    public function multi(bool $usePipeline = false) {}
 
-    public function rawCommand(string $command, array $arguments)
-    {
-    }
+    public function rawCommand(string $command, array $arguments) {}
 
     public function prepareRawCommandArguments(string $command, array $arguments): array
     {
         array_unshift($arguments, $command);
-        if ($this->logger) {
+        if($this->logger)
+        {
             $this->logger->debug(implode(' ', $arguments));
         }
         return $arguments;
@@ -57,14 +54,17 @@ abstract class AbstractRedisRawClient implements RedisRawClientInterface
         $isRawResultException = $rawResult instanceof Exception;
         $message = $isRawResultException ? $rawResult->getMessage() : $rawResult;
 
-        if (!is_string($message)) {
+        if(!is_string($message))
+        {
             return;
         }
         $message = strtolower($message);
-        if ($message === 'cannot create index on db != 0') {
+        if($message === 'cannot create index on db != 0')
+        {
             throw new UnsupportedRedisDatabaseException();
         }
-        if ($isRawResultException) {
+        if($isRawResultException)
+        {
             throw new RawCommandErrorException('', 0, $rawResult);
         }
     }

@@ -15,15 +15,24 @@ class TextField extends AbstractField
         return 'TEXT';
     }
 
-    public function getWeight(): float
+    public function getTypeDefinition(): array
     {
-        return $this->weight;
-    }
-
-    public function setWeight(float $weight)
-    {
-        $this->weight = $weight;
-        return $this;
+        $properties = parent::getTypeDefinition();
+        if($this->isNoStem())
+        {
+            $properties[] = 'NOSTEM';
+        }
+        $properties[] = 'WEIGHT';
+        $properties[] = $this->getWeight();
+        if($this->isSortable())
+        {
+            $properties[] = 'SORTABLE';
+        }
+        if($this->isNoindex())
+        {
+            $properties[] = 'NOINDEX';
+        }
+        return $properties;
     }
 
     public function isNoStem(): bool
@@ -37,20 +46,14 @@ class TextField extends AbstractField
         return $this;
     }
 
-    public function getTypeDefinition(): array
+    public function getWeight(): float
     {
-        $properties = parent::getTypeDefinition();
-        if ($this->isNoStem()) {
-            $properties[] = 'NOSTEM';
-        }
-        $properties[] = 'WEIGHT';
-        $properties[] = $this->getWeight();
-        if ($this->isSortable()) {
-            $properties[] = 'SORTABLE';
-        }
-        if ($this->isNoindex()) {
-            $properties[] = 'NOINDEX';
-        }
-        return $properties;
+        return $this->weight;
+    }
+
+    public function setWeight(float $weight)
+    {
+        $this->weight = $weight;
+        return $this;
     }
 }

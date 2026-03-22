@@ -7,6 +7,7 @@ use RedisException;
 
 /**
  * Class PhpRedisAdapter
+ *
  * @package BaksDev\SearchRedis\RedisRaw
  *
  * This class wraps the PhpRedis client: https://github.com/phpredis/phpredis
@@ -38,9 +39,12 @@ class PhpRedisAdapter extends AbstractRedisRawClient
     {
         $arguments = $this->prepareRawCommandArguments($command, $arguments);
         $rawResult = null;
-        try {
+        try
+        {
             $rawResult = call_user_func_array([$this->redis, 'rawCommand'], $arguments);
-        } catch (RedisException $exception) {
+        }
+        catch(RedisException $exception)
+        {
             $this->validateRawCommandResults($exception, $command, $arguments);
         }
         return $this->normalizeRawCommandResult($rawResult);

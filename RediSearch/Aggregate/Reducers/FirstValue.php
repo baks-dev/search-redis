@@ -4,9 +4,9 @@ namespace BaksDev\SearchRedis\RediSearch\Aggregate\Reducers;
 
 class FirstValue extends AbstractFieldNameReducer
 {
-    protected $reducerKeyword = 'FIRST_VALUE';
     public $byFieldName;
     public $isAscending;
+    protected $reducerKeyword = 'FIRST_VALUE';
 
     public function __construct(string $fieldName, ?string $byFieldName = null, bool $isAscending = true)
     {

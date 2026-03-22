@@ -41,7 +41,7 @@ class SearchRemoveFromIndexTest extends KernelTestCase
         $test_product = new AllProductsToIndexResult(
             ProductUid::TEST,
             'Test Product',
-            'Test-Product-Article'
+            'Test-Product-Article',
         );
 
         $RedisSearchIndexHandler = self::getContainer()->get(SearchIndexInterface::class);
@@ -58,7 +58,7 @@ class SearchRemoveFromIndexTest extends KernelTestCase
         $test_product = new AllProductsToIndexResult(
             ProductUid::TEST,
             'Test Product',
-            'Test-Product-Article'
+            'Test-Product-Article',
         );
 
         $RedisSearchIndexHandler = self::getContainer()->get(SearchIndexInterface::class);

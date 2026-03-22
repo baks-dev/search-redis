@@ -11,7 +11,7 @@ class UnknownIndexNameException extends Exception
         parent::__construct(
             trim("Unknown index name. $message"),
             $code,
-            $previous
+            $previous,
         );
     }
 }

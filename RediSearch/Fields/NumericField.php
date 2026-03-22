@@ -15,10 +15,12 @@ class NumericField extends AbstractField
     public function getTypeDefinition(): array
     {
         $properties = parent::getTypeDefinition();
-        if ($this->isSortable()) {
+        if($this->isSortable())
+        {
             $properties[] = 'SORTABLE';
         }
-        if ($this->isNoindex()) {
+        if($this->isNoindex())
+        {
             $properties[] = 'NOINDEX';
         }
         return $properties;

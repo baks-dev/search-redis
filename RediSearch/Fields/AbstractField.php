@@ -13,11 +13,6 @@ abstract class AbstractField implements FieldInterface
         $this->value = $value;
     }
 
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
     public function getValue()
     {
         return $this->value;
@@ -35,5 +30,10 @@ abstract class AbstractField implements FieldInterface
             $this->getName(),
             $this->getType(),
         ];
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
     }
 }
